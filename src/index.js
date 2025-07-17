@@ -6,8 +6,9 @@ import connectToDatabase from "./db/index.js";
 import { app } from "./app.js";
 
 // Load environment variables from the .env file
-dotenv
-  .config({ path: "./env" }) // Configure dotenv to use the "./env" file
+dotenv.config({ path: "./env" }); // Configure dotenv to use the "./env" file
+
+connectToDatabase() // Call the function to connect to the MongoDB database
   .then(() => {
     // After loading env variables successfully
     app.on("error", (error) => {
@@ -24,8 +25,6 @@ dotenv
     // If dotenv fails to load env variables
     console.error("Mongo db connection failed", error); // Log the error
   });
-
-connectToDatabase(); // Call the function to connect to the MongoDB database
 
 /*
 The following block is commented out and shows an alternative way to connect to MongoDB and start the server using an async IIFE (Immediately Invoked Function Expression):
