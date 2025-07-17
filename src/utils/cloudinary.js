@@ -13,19 +13,15 @@ export const uploadOnCloudinary = async (localFilePath) => {
       throw new Error("No file path provided for upload.");
     }
     // Upload an image
-    const uploadResult = await cloudinary.uploader
-      .upload(localFilePath, {
-        resource_type: "auto", // Automatically determine the resource type
-      })
-      .then(() => {
-        console.log("File uploaded successfully to Cloudinary.");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const uploadResult = await cloudinary.uploader.upload(localFilePath, {
+      resource_type: "auto", // Automatically determine the resource type
+    });
+    console.log("File uploaded successfully to Cloudinary.");
     console.log(uploadResult);
   } catch (error) {
-    fs.unlinkSync(localFilePath); // Delete the file if upload fails
+    if (localFilePath && fs.existsSync(localFilePath)) {
+      fs.unlinkSync(localFilePath); // Delete the file if upload fails
+    }
     console.error("Error uploading file to Cloudinary:", error);
     return null;
   }
