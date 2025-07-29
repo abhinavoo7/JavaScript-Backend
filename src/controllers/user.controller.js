@@ -16,26 +16,17 @@ export const registerUser = asyncHandler(async (req, res) => {
   // return response with user details
   const { username, email, fullName, avatar, password, coverImage } = req.body;
 
-  console.log("Registering user:", {
-    username,
-    email,
-    fullName,
-    avatar,
-    coverImage,
-  });
-
   if (
     [fullName, email, username, password].some((field) => field?.trim() === "")
   ) {
     throw new ApiError(400, "All fields are required");
   }
 
-  const existedUser = User.findOne({ $or: [{ username }, { email }] });
+  const existedUser = await User.findOne({ $or: [{ username }, { email }] });
 
   if (existedUser) {
     throw new ApiError(409, "User already exists");
   }
-  console.log(req.files);
 
   const avtarLocalPath = req.files?.avatar?.[0]?.path;
   const coverImgLocalPath = req.files?.coverImage?.[0]?.path;
@@ -56,8 +47,8 @@ export const registerUser = asyncHandler(async (req, res) => {
     username: username.toLowerCase(),
     email,
     fullName,
-    avatar: avtaar.url,
-    coverImage: coverImagePath || null, // Optional cover image
+    avatar: avtaar?.secure_url,
+    coverImage: coverImagePath?.secure_url || null, // Optional cover image
     password, // Ensure to hash the password before saving in production
   });
 

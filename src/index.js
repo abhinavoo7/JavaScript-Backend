@@ -6,7 +6,7 @@ import connectToDatabase from "./db/index.js";
 import { app } from "./app.js";
 
 // Load environment variables from the .env file
-dotenv.config({ path: "./env" }); // Configure dotenv to use the "./env" file
+dotenv.config({ path: "./.env" }); // Configure dotenv to use the "./env" file
 
 connectToDatabase() // Call the function to connect to the MongoDB database
   .then(() => {
