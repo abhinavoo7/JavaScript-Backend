@@ -28,3 +28,9 @@ app.use(express.static("public")); // Make files in the "public" folder accessib
 
 // Parse cookies attached to the client
 app.use(cookieParser()); // Parse cookies from incoming requests and populate req.cookies
+
+// routes import
+import userRouter from "./routes/user.routes.js";
+
+// routes declaration
+app.use("/api/v1/users", userRouter); // Mount the user routes under the "/users" path

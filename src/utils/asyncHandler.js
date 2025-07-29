@@ -1,14 +1,14 @@
-export const asyncHandler =
-  (requestHandler) =>
-  // Export a function named asyncHandler that takes a request handler function as an argument
-  (req, res, next) => {
+// Export a function named asyncHandler that takes a request handler function as an argument
+export const asyncHandler = (requestHandler) => {
+  return (req, res, next) => {
     // Return a middleware function with req, res, and next
-    return Promise.resolve(requestHandler(req, res, next)).catch(
+    Promise.resolve(requestHandler(req, res, next)).catch(
       (
         error // Call the request handler and catch any errors
       ) => next(error) // Pass any errors to the next middleware (error handler)
     );
   };
+};
 
 /*
 export const asyncHandler = (requestHandler) => async (req, res, next) => {
