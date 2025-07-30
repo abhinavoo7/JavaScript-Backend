@@ -14,10 +14,12 @@ export const registerUser = asyncHandler(async (req, res) => {
   // remove password and refresh token field from response
   // check for user creation
   // return response with user details
-  const { username, email, fullName, avatar, password, coverImage } = req.body;
+  const { username, email, fullName, password } = req?.body ?? {};
 
   if (
-    [fullName, email, username, password].some((field) => field?.trim() === "")
+    [fullName, email, username, password].some(
+      (field) => !field || field?.trim() === ""
+    )
   ) {
     throw new ApiError(400, "All fields are required");
   }
@@ -37,7 +39,15 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   const avtaar = await uploadOnCloudinary(avtarLocalPath);
 
-  const coverImagePath = await uploadOnCloudinary(coverImgLocalPath);
+  let coverImagePath;
+
+  if (
+    coverImgLocalPath?.secure_url?.trim() !== "" &&
+    Array.isArray(req.files?.coverImage) &&
+    req.files.coverImage.length > 0
+  ) {
+    coverImagePath = await uploadOnCloudinary(coverImgLocalPath);
+  }
 
   if (!avtaar) {
     throw new ApiError(500, "Failed to upload avtaar");
@@ -48,7 +58,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     email,
     fullName,
     avatar: avtaar?.secure_url,
-    coverImage: coverImagePath?.secure_url || null, // Optional cover image
+    coverImage: coverImagePath?.secure_url ?? "", // Optional cover image
     password, // Ensure to hash the password before saving in production
   });
 

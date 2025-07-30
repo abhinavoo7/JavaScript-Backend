@@ -4,7 +4,7 @@ export class ApiError extends Error {
     statusCode, // HTTP status code for the error
     message = "Something went error", // Default error message if none is provided
     errors = [], // Additional error details (optional, defaults to empty array)
-    stack = [] // Optional stack trace (defaults to empty array)
+    stack = "" // Optional stack trace
   ) {
     super(message); // Call the parent Error constructor with the message
     this.statusCode = statusCode; // Set the HTTP status code
@@ -12,6 +12,7 @@ export class ApiError extends Error {
     this.success = false; // Indicate that the operation was not successful
     this.message = message; // Set the error message
     this.errors = errors; // Set the additional error details
+    this.name = this.constructor.name;
 
     if (stack) {
       // If a stack trace is provided
