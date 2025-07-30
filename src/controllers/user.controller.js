@@ -149,3 +149,30 @@ export const loginUser = asyncHandler(async (req, res) => {
       )
     );
 });
+
+export const logoutUser = asyncHandler(async (req, res) => {
+  const userId = req?.user?._id; // Get user from request object set by verifyJwt middleware
+  if (!userId) {
+    throw new ApiError(400, "User not found");
+  }
+  const cookieOptions = {
+    httpOnly: true,
+    secure: true, // Use secure cookies in production
+    sameSite: "Strict", // Prevent CSRF attacks
+  };
+  const userData = await User.findByIdAndUpdate(
+    userId,
+    {
+      $set: { refreshToken: null }, // Clear the refresh token
+    },
+    {
+      new: true, // Return the updated document
+      runValidators: false, // Validate the update operation
+    }
+  );
+  return res
+    .status(200)
+    .clearCookie("accessToken", cookieOptions)
+    .clearCookie("refreshToken", cookieOptions)
+    .json(new ApiResponse(200, {}, "User logged out successfully"));
+});
