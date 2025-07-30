@@ -6,11 +6,17 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 const generateAccessAndRefreshTokens = async (useId) => {
   try {
-    const userData = User.findById(useId);
+    const userData = await User.findById(useId);
+
     const accessToken = userData.generateAccessToken();
+    console.log("accessToken", accessToken);
     const refreshToken = userData.generateRefreshToken();
+    console.log("refreshToken", refreshToken);
+
     userData.refreshToken = refreshToken; // Save refresh token in user document
     await userData.save({ validateBeforeSave: false }); // Save the user document with the new refresh token
+    console.log("userData after save", userData);
+
     return { accessToken, refreshToken };
   } catch (error) {
     throw new ApiError(500, "Failed to generate tokens");
@@ -99,7 +105,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   const { username, email, password } = req?.body ?? {};
 
-  if ([username, email].some((field) => !field || field?.trim() === "")) {
+  if (!username && !email) {
     throw new ApiError(400, "Username or email is required");
   }
 
