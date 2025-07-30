@@ -4,6 +4,19 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
+const generateAccessAndRefreshTokens = async (useId) => {
+  try {
+    const userData = User.findById(useId);
+    const accessToken = userData.generateAccessToken();
+    const refreshToken = userData.generateRefreshToken();
+    userData.refreshToken = refreshToken; // Save refresh token in user document
+    await userData.save({ validateBeforeSave: false }); // Save the user document with the new refresh token
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(500, "Failed to generate tokens");
+  }
+};
+
 export const registerUser = asyncHandler(async (req, res) => {
   // get user details from frontend
   // validation - not empty
@@ -74,4 +87,39 @@ export const registerUser = asyncHandler(async (req, res) => {
   return res
     .status(201)
     .json(new ApiResponse(200, createdUser, "User registered successfully"));
+});
+
+export const loginUser = asyncHandler(async (req, res) => {
+  // get user details from req body
+  // validation - not empty
+  // check if user exists: username, email
+  // check for password match
+  // create access token and refresh token
+  // return response with user details and token as cookies
+
+  const { username, email, password } = req?.body ?? {};
+
+  if ([username, email].some((field) => !field || field?.trim() === "")) {
+    throw new ApiError(400, "Username or email is required");
+  }
+
+  if (!password || password.trim() === "") {
+    throw new ApiError(400, "Password is required");
+  }
+
+  const userData = await User.findOne({ $or: [{ username }, { email }] });
+
+  if (!userData) {
+    throw new ApiError(404, "User does not exists");
+  }
+
+  const isPasswordValid = await userData.isPasswordCorrect(password);
+
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid password");
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+    userData._id
+  );
 });
