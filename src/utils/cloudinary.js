@@ -13,10 +13,11 @@ export const uploadOnCloudinary = async (localFilePath) => {
       throw new Error("No file path provided for upload.");
     }
     // Upload an image
-    const uploadResult = await cloudinary.uploader.upload(localFilePath, {
+    const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto", // Automatically determine the resource type
     });
-    return uploadResult; // Return the upload result
+    fs.unlinkSync(localFilePath);
+    return response; // Return the upload result
   } catch (error) {
     if (localFilePath && fs.existsSync(localFilePath)) {
       fs.unlinkSync(localFilePath); // Delete the file if upload fails

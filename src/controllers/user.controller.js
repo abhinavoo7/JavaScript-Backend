@@ -42,7 +42,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   let coverImagePath;
 
   if (
-    coverImgLocalPath?.secure_url.trim() !== "" &&
+    coverImgLocalPath?.secure_url?.trim() !== "" &&
     Array.isArray(req.files?.coverImage) &&
     req.files.coverImage.length > 0
   ) {
