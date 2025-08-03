@@ -10,14 +10,9 @@ const generateAccessAndRefreshTokens = async (useId) => {
     const userData = await User.findById(useId);
 
     const accessToken = userData.generateAccessToken();
-    console.log("accessToken", accessToken);
     const refreshToken = userData.generateRefreshToken();
-    console.log("refreshToken", refreshToken);
-
     userData.refreshToken = refreshToken; // Save refresh token in user document
     await userData.save({ validateBeforeSave: false }); // Save the user document with the new refresh token
-    console.log("userData after save", userData);
-
     return { accessToken, refreshToken };
   } catch (error) {
     throw new ApiError(500, "Failed to generate tokens");
