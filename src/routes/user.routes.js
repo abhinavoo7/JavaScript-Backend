@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  getCurrentUser,
   loginUser,
   logoutUser,
   refreshAccessToken,
@@ -30,9 +31,13 @@ router.route("/login").post(loginUser);
 
 // secure routes
 
-router.route("/logout").post(verifyJwt, logoutUser);
-
 router.route("/refresh-token").post(refreshAccessToken);
+
+router.use(verifyJwt);
+
+router.route("/logout").post(logoutUser);
+
+router.route("/user").get(getCurrentUser);
 
 // integrating user profile router
 router.use("/update-user-profile", userProfileRouter);

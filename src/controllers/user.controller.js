@@ -233,8 +233,11 @@ export const changePassword = asyncHandler(async (req, res) => {
   if (!oldPassword || !newPassword) {
     throw new ApiError(400, "Password requied!");
   }
+  if (oldPassword?.trim() === newPassword?.trim()) {
+    throw new ApiError(400, "New password cannot be same as old password");
+  }
   const userId = req?.user?._id;
-  const user = User.findById(userId);
+  const user = await User.findById(userId);
   const isPasswordValid = await user.isPasswordCorrect(oldPassword);
   if (!isPasswordValid) {
     throw new ApiError(400, "Incorrect Password!");
@@ -247,6 +250,8 @@ export const changePassword = asyncHandler(async (req, res) => {
 });
 
 export const getCurrentUser = asyncHandler((req, res) => {
+  console.log(req.user);
+
   return res
     .status(200)
     .json(new ApiResponse(200, req.user, "User fetched successfully"));
