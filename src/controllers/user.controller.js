@@ -1,7 +1,10 @@
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import {
+  removeFromCloudinary,
+  uploadOnCloudinary,
+} from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 
@@ -161,7 +164,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
     secure: true, // Use secure cookies in production
     sameSite: "Strict", // Prevent CSRF attacks
   };
-  const userData = await User.findByIdAndUpdate(
+  await User.findByIdAndUpdate(
     userId,
     {
       $set: { refreshToken: null }, // Clear the refresh token
@@ -276,6 +279,8 @@ export const updateAvatar = asyncHandler(async (req, res) => {
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar file missing");
   }
+  const prevAvatarImageUrl = req?.user?.avatar;
+  await removeFromCloudinary(prevAvatarImageUrl);
   const avatar = await uploadOnCloudinary(avatarLocalPath);
   if (!avatar.secure_url) {
     throw new ApiError(400, "Error while uploading file");
@@ -290,7 +295,7 @@ export const updateAvatar = asyncHandler(async (req, res) => {
     { new: true }
   ).select("-password");
   return res
-    .json(200)
+    .status(200)
     .json(new ApiResponse(200, updatedUser, "Avatar updated successfully!"));
 });
 
@@ -299,10 +304,16 @@ export const updateUserCoverImage = asyncHandler(async (req, res) => {
   if (!coverImageLocalPath) {
     throw new ApiError(400, "Cover Image file missing");
   }
+  const prevCoverImageUrl = req?.user?.coverImage;
+  if (prevCoverImageUrl) {
+    await removeFromCloudinary(prevCoverImageUrl);
+  }
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+
   if (!coverImage.secure_url) {
     throw new ApiError(400, "Error while uploading file");
   }
+
   const updatedUser = await User.findByIdAndUpdate(
     req?.user?._id,
     {
@@ -312,9 +323,32 @@ export const updateUserCoverImage = asyncHandler(async (req, res) => {
     },
     { new: true }
   ).select("-password");
+
   return res
-    .json(200)
+    .status(200)
     .json(
       new ApiResponse(200, updatedUser, "Cover Image updated successfully!")
+    );
+});
+
+export const deleteUserCoverImage = asyncHandler(async (req, res) => {
+  const coverImageUrl = req.user?.coverImage;
+  if (!coverImageUrl) {
+    throw new ApiResponse(404, "No cover image exists!");
+  }
+  await removeFromCloudinary(coverImageUrl);
+  const updatedUser = await User.findByIdAndUpdate(
+    req?.user?._id,
+    {
+      $set: {
+        coverImage: "",
+      },
+    },
+    { new: true }
+  ).select("-password");
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedUser, "Cover Image removed successfully!")
     );
 });

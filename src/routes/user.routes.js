@@ -4,9 +4,11 @@ import {
   logoutUser,
   refreshAccessToken,
   registerUser,
+  updateUserCoverImage,
 } from "../controllers/user.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 import { verifyJwt } from "../middleware/auth.middleware.js";
+import userProfileRouter from "./user-profile.routes.js";
 
 const router = Router();
 
@@ -31,5 +33,8 @@ router.route("/login").post(loginUser);
 router.route("/logout").post(verifyJwt, logoutUser);
 
 router.route("/refresh-token").post(refreshAccessToken);
+
+// integrating user profile router
+router.use("/update-user-profile", userProfileRouter);
 
 export default router;
