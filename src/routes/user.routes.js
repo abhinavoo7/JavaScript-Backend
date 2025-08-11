@@ -1,11 +1,12 @@
 import { Router } from "express";
 import {
   getCurrentUser,
+  getUserChannelProfile,
+  getWatchHistory,
   loginUser,
   logoutUser,
   refreshAccessToken,
   registerUser,
-  updateUserCoverImage,
 } from "../controllers/user.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 import { verifyJwt } from "../middleware/auth.middleware.js";
@@ -38,6 +39,10 @@ router.use(verifyJwt);
 router.route("/logout").post(logoutUser);
 
 router.route("/user").get(getCurrentUser);
+
+router.route("/channel/:username").get(getUserChannelProfile);
+
+router.route("/watch-history").get(getWatchHistory);
 
 // integrating user profile router
 router.use("/update-user-profile", userProfileRouter);

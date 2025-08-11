@@ -393,15 +393,18 @@ export const getUserChannelProfile = asyncHandler(async (req, res) => {
           $size: "$subscribers",
         },
         channelsSubscribedToCount: {
-          $size: "subscribedTo",
+          $size: "$subscribedTo",
         },
         isSubscribed: {
           $cond: {
             if: {
-              $in: [req?.user?._id, "$subscribers.subscriber"],
-              then: true,
-              else: false,
+              $in: [
+                new mongoose.Types.ObjectId(String(req?.user?._id)),
+                "$subscribers.subscriber",
+              ],
             },
+            then: true,
+            else: false,
           },
         },
       },
@@ -419,7 +422,6 @@ export const getUserChannelProfile = asyncHandler(async (req, res) => {
       },
     },
   ]);
-  console.log(channel);
 
   if (!channel?.length) {
     throw new ApiError(404, "Channel does notexist!");
@@ -454,7 +456,7 @@ export const getWatchHistory = asyncHandler(async (req, res) => {
               pipeline: [
                 {
                   $project: {
-                    $project: 1,
+                    project: 1,
                     fullName: 1,
                     username: 1,
                     avatar: 1,
