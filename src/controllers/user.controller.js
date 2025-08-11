@@ -168,7 +168,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     userId,
     {
-      $set: { refreshToken: null }, // Clear the refresh token
+      $unset: { refreshToken: 1 }, // Clear the refresh token
     },
     {
       new: true, // Return the updated document
@@ -251,8 +251,6 @@ export const changePassword = asyncHandler(async (req, res) => {
 });
 
 export const getCurrentUser = asyncHandler((req, res) => {
-  console.log(req.user);
-
   return res
     .status(200)
     .json(new ApiResponse(200, req.user, "User fetched successfully"));
