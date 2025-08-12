@@ -1,26 +1,14 @@
-import { ApiError } from "../utils/ApiError.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.util.js";
+import { asyncHandler } from "../utils/asyncHandler.util.js";
 import { User } from "../models/user.model.js";
 import {
   removeFromCloudinary,
   uploadOnCloudinary,
-} from "../utils/cloudinary.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
+} from "../utils/cloudinary.util.js";
+import { ApiResponse } from "../utils/ApiResponse.util.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-
-const generateAccessAndRefreshTokens = async (useId) => {
-  try {
-    const userData = await User.findById(useId);
-    const accessToken = userData.generateAccessToken();
-    const refreshToken = userData.generateRefreshToken();
-    userData.refreshToken = refreshToken; // Save refresh token in user document
-    await userData.save({ validateBeforeSave: false }); // Save the user document with the new refresh token
-    return { accessToken, refreshToken };
-  } catch (error) {
-    throw new ApiError(500, "Failed to generate tokens");
-  }
-};
+import { generateAccessAndRefreshTokens } from "../utils/UserController.util.js";
 
 export const registerUser = asyncHandler(async (req, res) => {
   // get user details from frontend

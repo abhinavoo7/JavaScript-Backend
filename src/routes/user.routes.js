@@ -8,8 +8,8 @@ import {
   refreshAccessToken,
   registerUser,
 } from "../controllers/user.controller.js";
-import { upload } from "../middleware/multer.middleware.js";
-import { verifyJwt } from "../middleware/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
+import { verifyJwt } from "../middlewares/auth.middleware.js";
 import userProfileRouter from "./user-profile.routes.js";
 
 const router = Router();
