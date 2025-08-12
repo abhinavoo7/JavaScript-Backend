@@ -3,7 +3,7 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const tweetSchema = new Schema(
   {
-    onwer: {
+    owner: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },

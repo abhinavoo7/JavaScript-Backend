@@ -1,26 +1,15 @@
-import { ApiError } from "../utils/ApiError.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.util.js";
+import { asyncHandler } from "../utils/asyncHandler.util.js";
 import { User } from "../models/user.model.js";
 import {
   removeFromCloudinary,
   uploadOnCloudinary,
-} from "../utils/cloudinary.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
+} from "../utils/cloudinary.util.js";
+import { ApiResponse } from "../utils/ApiResponse.util.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-
-const generateAccessAndRefreshTokens = async (useId) => {
-  try {
-    const userData = await User.findById(useId);
-    const accessToken = userData.generateAccessToken();
-    const refreshToken = userData.generateRefreshToken();
-    userData.refreshToken = refreshToken; // Save refresh token in user document
-    await userData.save({ validateBeforeSave: false }); // Save the user document with the new refresh token
-    return { accessToken, refreshToken };
-  } catch (error) {
-    throw new ApiError(500, "Failed to generate tokens");
-  }
-};
+import { generateAccessAndRefreshTokens } from "../utils/UserController.util.js";
+import { SUCCESS_MESSAGES } from "../constants.js";
 
 export const registerUser = asyncHandler(async (req, res) => {
   // get user details from frontend
@@ -91,7 +80,13 @@ export const registerUser = asyncHandler(async (req, res) => {
   // Assume user registration logic here
   return res
     .status(201)
-    .json(new ApiResponse(200, createdUser, "User registered successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        createdUser,
+        SUCCESS_MESSAGES.USER.REGISTERED_SUCCESSFULLY
+      )
+    );
 });
 
 export const loginUser = asyncHandler(async (req, res) => {
@@ -150,7 +145,7 @@ export const loginUser = asyncHandler(async (req, res) => {
           accessToken,
           refreshToken,
         },
-        "User logged in successfully"
+        SUCCESS_MESSAGES.USER.LOGGED_IN
       )
     );
 });
@@ -179,7 +174,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("accessToken", cookieOptions)
     .clearCookie("refreshToken", cookieOptions)
-    .json(new ApiResponse(200, {}, "User logged out successfully"));
+    .json(new ApiResponse(200, {}, SUCCESS_MESSAGES.USER.LOGGED_OUT));
 });
 
 export const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -221,7 +216,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
         new ApiResponse(
           200,
           { accessToken, newRefreshToken },
-          "Tokens refreshed successfully"
+          SUCCESS_MESSAGES.USER.TOKEN_REFRESH
         )
       );
   } catch (error) {
@@ -247,13 +242,13 @@ export const changePassword = asyncHandler(async (req, res) => {
   await user.save({ validateBeforeSave: false });
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Password updated successfully!"));
+    .json(new ApiResponse(200, {}, SUCCESS_MESSAGES.USER.PASSWORD_UPDATE));
 });
 
 export const getCurrentUser = asyncHandler((req, res) => {
   return res
     .status(200)
-    .json(new ApiResponse(200, req.user, "User fetched successfully"));
+    .json(new ApiResponse(200, req.user, SUCCESS_MESSAGES.USER.USER_FETCHED));
 });
 
 export const updateUserDetails = asyncHandler(async (req, res) => {
@@ -274,7 +269,7 @@ export const updateUserDetails = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, updatedUser, "User details updated successfully")
+      new ApiResponse(200, updatedUser, SUCCESS_MESSAGES.USER.USER_UPDATED)
     );
 });
 
@@ -300,7 +295,9 @@ export const updateAvatar = asyncHandler(async (req, res) => {
   ).select("-password");
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedUser, "Avatar updated successfully!"));
+    .json(
+      new ApiResponse(200, updatedUser, SUCCESS_MESSAGES.USER.AVTAR_UPDATED)
+    );
 });
 
 export const updateUserCoverImage = asyncHandler(async (req, res) => {
@@ -331,14 +328,18 @@ export const updateUserCoverImage = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, updatedUser, "Cover Image updated successfully!")
+      new ApiResponse(
+        200,
+        updatedUser,
+        SUCCESS_MESSAGES.USER.COVER_IMAGE_UPDATED
+      )
     );
 });
 
 export const deleteUserCoverImage = asyncHandler(async (req, res) => {
   const coverImageUrl = req.user?.coverImage;
   if (!coverImageUrl) {
-    throw new ApiResponse(404, "No cover image exists!");
+    throw new ApiError(404, "No cover image exists!");
   }
   await removeFromCloudinary(coverImageUrl);
   const updatedUser = await User.findByIdAndUpdate(
@@ -353,7 +354,11 @@ export const deleteUserCoverImage = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, updatedUser, "Cover Image removed successfully!")
+      new ApiResponse(
+        200,
+        updatedUser,
+        SUCCESS_MESSAGES.USER.REMOVED_COVER_IMAGE
+      )
     );
 });
 
@@ -427,7 +432,7 @@ export const getUserChannelProfile = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, channel?.[0], "User channel fetched successfully")
+      new ApiResponse(200, channel?.[0], SUCCESS_MESSAGES.USER.CHANNEL_FETCHED)
     );
 });
 
@@ -485,7 +490,7 @@ export const getWatchHistory = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         user[0].watchHistory,
-        "Watched history fetched successfully"
+        SUCCESS_MESSAGES.USER.WATCH_HISTORY_FETCHED
       )
     );
 });

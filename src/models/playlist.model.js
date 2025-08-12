@@ -18,7 +18,7 @@ const playListSchema = new Schema(
         ref: "Video",
       },
     ],
-    onwer: {
+    owner: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
