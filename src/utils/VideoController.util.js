@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import { SORT_TYPES } from "../constants";
-import { getSortOrder } from "./helper.util";
-import { ApiError } from "./ApiError.util";
+import { SORT_TYPES } from "../constants.js";
+import { getSortOrder } from "./helper.util.js";
+import { ApiError } from "./ApiError.util.js";
 
 /**
  * @description function to create pipeline aggregation for matching query and user id and sorting based on parameters given

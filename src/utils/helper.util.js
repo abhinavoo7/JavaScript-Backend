@@ -1,4 +1,4 @@
-import { SORT_TYPES } from "../constants";
+import { SORT_TYPES } from "../constants.js";
 
 export const getSortOrder = (sortType) => {
   switch (sortType?.toLowerCase()) {

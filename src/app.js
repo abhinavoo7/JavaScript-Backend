@@ -31,6 +31,8 @@ app.use(cookieParser()); // Parse cookies from incoming requests and populate re
 
 // routes import
 import userRouter from "./routes/user.routes.js";
+import videoRouter from "./routes/video.routes.js";
 
 // routes declaration
 app.use("/api/v1/users", userRouter); // Mount the user routes under the "/users" path
+app.use("/api/v1/videos", videoRouter);
