@@ -28,6 +28,7 @@ export const SUCCESS_MESSAGES = {
   },
   VIDEOS: {
     VIDEOS_FETCHED: "Videos Fetched successfully!",
+    UPLOAD_SUCCESS: "Video uploaded sccessfully!",
   },
 };
 
