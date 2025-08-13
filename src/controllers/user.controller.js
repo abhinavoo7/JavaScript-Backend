@@ -8,8 +8,16 @@ import {
 import { ApiResponse } from "../utils/ApiResponse.util.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import { generateAccessAndRefreshTokens } from "../utils/UserController.util.js";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../constants.js";
+import {
+  generateAccessAndRefreshTokens,
+  getUserChannelPipelineAggregate,
+  getWatchHistoryPipelineAggregate,
+} from "../utils/UserController.util.js";
+import {
+  COOKIE_OPTIONS,
+  ERROR_MESSAGES,
+  SUCCESS_MESSAGES,
+} from "../constants.js";
 
 export const registerUser = asyncHandler(async (req, res) => {
   // get user details from frontend
@@ -127,16 +135,10 @@ export const loginUser = asyncHandler(async (req, res) => {
     "-password -refreshToken"
   );
 
-  const cookieOptions = {
-    httpOnly: true,
-    secure: true, // Use secure cookies in production
-    sameSite: "Strict", // Prevent CSRF attacks
-  };
-
   return res
     .status(200)
-    .cookie("accessToken", accessToken, cookieOptions)
-    .cookie("refreshToken", refreshToken, cookieOptions)
+    .cookie("accessToken", accessToken, COOKIE_OPTIONS)
+    .cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
     .json(
       new ApiResponse(
         200,
@@ -155,11 +157,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
   if (!userId) {
     throw new ApiError(400, ERROR_MESSAGES.USER.DOES_NOT_EXIST);
   }
-  const cookieOptions = {
-    httpOnly: true,
-    secure: true, // Use secure cookies in production
-    sameSite: "Strict", // Prevent CSRF attacks
-  };
+
   await User.findByIdAndUpdate(
     userId,
     {
@@ -172,8 +170,8 @@ export const logoutUser = asyncHandler(async (req, res) => {
   );
   return res
     .status(200)
-    .clearCookie("accessToken", cookieOptions)
-    .clearCookie("refreshToken", cookieOptions)
+    .clearCookie("accessToken", COOKIE_OPTIONS)
+    .clearCookie("refreshToken", COOKIE_OPTIONS)
     .json(new ApiResponse(200, {}, SUCCESS_MESSAGES.USER.LOGGED_OUT));
 });
 
@@ -202,16 +200,10 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     const { accessToken, newRefreshToken } =
       await generateAccessAndRefreshTokens(user._id);
 
-    const options = {
-      httpOnly: true,
-      secure: true, // Use secure cookies in production
-      sameSite: "Strict", // Prevent CSRF attacks
-    };
-
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", newRefreshToken, options)
+      .cookie("accessToken", accessToken, COOKIE_OPTIONS)
+      .cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS)
       .json(
         new ApiResponse(
           200,
@@ -371,63 +363,9 @@ export const getUserChannelProfile = asyncHandler(async (req, res) => {
     throw new ApiError(400, ERROR_MESSAGES.USER.USERNAME_MISSING);
   }
 
-  const channel = await User.aggregate([
-    {
-      $match: {
-        username: username?.toLowerCase(),
-      },
-    },
-    {
-      $lookup: {
-        from: "subscriptions",
-        localField: "_id",
-        foreignField: "channel",
-        as: "subscribers",
-      },
-    },
-    {
-      $lookup: {
-        from: "subscriptions",
-        localField: "_id",
-        foreignField: "subscriber",
-        as: "subscribedTo",
-      },
-    },
-    {
-      $addFields: {
-        subscribersCount: {
-          $size: "$subscribers",
-        },
-        channelsSubscribedToCount: {
-          $size: "$subscribedTo",
-        },
-        isSubscribed: {
-          $cond: {
-            if: {
-              $in: [
-                new mongoose.Types.ObjectId(String(req?.user?._id)),
-                "$subscribers.subscriber",
-              ],
-            },
-            then: true,
-            else: false,
-          },
-        },
-      },
-    },
-    {
-      $project: {
-        fullName: 1,
-        username: 1,
-        subscribersCount: 1,
-        channelsSubscribedToCount: 1,
-        isSubscribed: 1,
-        avatar: 1,
-        coverImage: 1,
-        email: 1,
-      },
-    },
-  ]);
+  const channel = await User.aggregate(
+    getUserChannelPipelineAggregate(username, String(req?.user?._id))
+  );
 
   if (!channel?.length) {
     throw new ApiError(404, ERROR_MESSAGES.USER.CHANNEL_NOT_EXIST);
@@ -440,48 +378,9 @@ export const getUserChannelProfile = asyncHandler(async (req, res) => {
 });
 
 export const getWatchHistory = asyncHandler(async (req, res) => {
-  const user = await User.aggregate([
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(String(req?.user?._id)),
-      },
-    },
-    {
-      $lookup: {
-        from: "videos",
-        localField: "watchHistory",
-        foreignField: "_id",
-        as: "watchHistory",
-        pipeline: [
-          {
-            $lookup: {
-              from: "users",
-              localField: "onwer",
-              foreignField: "_id",
-              as: "owner",
-              pipeline: [
-                {
-                  $project: {
-                    project: 1,
-                    fullName: 1,
-                    username: 1,
-                    avatar: 1,
-                  },
-                },
-              ],
-            },
-          },
-          {
-            $addFields: {
-              owner: {
-                $first: "$owner",
-              },
-            },
-          },
-        ],
-      },
-    },
-  ]);
+  const user = await User.aggregate(
+    getWatchHistoryPipelineAggregate(String(req?.user?._id))
+  );
 
   if (!user) {
     throw new ApiError(404, ERROR_MESSAGES.USER.DOES_NOT_EXIST);

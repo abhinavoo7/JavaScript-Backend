@@ -1,5 +1,11 @@
 export const DB_NAME = "vidtube";
 
+export const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: true, // Use secure cookies in production
+  sameSite: "Strict", // Prevent CSRF attacks
+};
+
 export const SORT_TYPES = {
   ASCENDING: "asc",
   DECENDING: "desc",
