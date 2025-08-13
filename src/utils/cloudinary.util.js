@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import { ApiError } from "./ApiError.util.js";
+import { ERROR_MESSAGES } from "../constants.js";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -11,7 +12,7 @@ cloudinary.config({
 export const uploadOnCloudinary = async (localFilePath) => {
   try {
     if (!localFilePath) {
-      throw new Error("No file path provided for upload.");
+      throw new ApiError(500, ERROR_MESSAGES.UPLOAD.NO_PATH_PROVIDED);
     }
     // Upload an image
     const response = await cloudinary.uploader.upload(localFilePath, {
@@ -35,11 +36,11 @@ export const uploadOnCloudinary = async (localFilePath) => {
 export const removeFromCloudinary = async (url) => {
   try {
     if (!url) {
-      throw new ApiError(400, "Incorrect cloudinary url");
+      throw new ApiError(400, ERROR_MESSAGES.UPLOAD.INVALID_CLOUDINARY_URL);
     }
     const publicId = url.split("/").pop().split(".")[0];
     const result = cloudinary.uploader.destroy(publicId);
   } catch (error) {
-    throw new ApiError(400, "Failed to delete from cloudinary");
+    throw new ApiError(400, ERROR_MESSAGES.UPLOAD.CLOUDINARY_DELETE_FAILED);
   }
 };
