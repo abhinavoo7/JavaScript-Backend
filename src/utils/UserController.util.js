@@ -1,3 +1,4 @@
+import { ERROR_MESSAGES } from "../constants.js";
 import { User } from "../models/user.model.js";
 import { ApiError } from "./ApiError.util.js";
 
@@ -10,6 +11,6 @@ export const generateAccessAndRefreshTokens = async (useId) => {
     await userData.save({ validateBeforeSave: false }); // Save the user document with the new refresh token
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(500, "Failed to generate tokens");
+    throw new ApiError(500, ERROR_MESSAGES.USER.TOKEN_GENERATION_FAILED);
   }
 };

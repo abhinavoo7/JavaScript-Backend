@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { SORT_TYPES } from "../constants.js";
+import { ERROR_MESSAGES, SORT_TYPES } from "../constants.js";
 import { getSortOrder } from "./helper.util.js";
 import { ApiError } from "./ApiError.util.js";
 
@@ -13,7 +13,7 @@ import { ApiError } from "./ApiError.util.js";
  */
 export const buildPipeline = (query, userId, sortBy, sortType) => {
   if (sortType && !Object.values(SORT_TYPES).includes(sortBy)) {
-    throw new ApiError(400, "Incorrect input");
+    throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_INPUT);
   }
   const stages = [];
   // MATCH stage
