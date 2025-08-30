@@ -7,7 +7,6 @@ import {
 } from "../utils/cloudinary.util.js";
 import { ApiResponse } from "../utils/ApiResponse.util.js";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
 import {
   generateAccessAndRefreshTokens,
   getUserChannelPipelineAggregate,

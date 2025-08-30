@@ -44,9 +44,9 @@ export const getAllVideosAggregatePipeline = (
     },
     {
       $lookup: {
-        from: "videos",
-        localField: "_id",
-        foreignField: "owner",
+        from: "users",
+        foreignField: "_id",
+        localField: "owner",
         as: "owner",
         pipeline: [
           {
