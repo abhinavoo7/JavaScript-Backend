@@ -12,6 +12,9 @@ export const SORT_TYPES = {
 };
 
 export const SUCCESS_MESSAGES = {
+  COMMON: {
+    FETCH_SUCCESSFUL: "Data fetched successfully",
+  },
   USER: {
     REGISTERED_SUCCESSFULLY: "User registered successfully!",
     LOGGED_IN: "User logged in successfully!",
@@ -28,6 +31,7 @@ export const SUCCESS_MESSAGES = {
   },
   VIDEOS: {
     VIDEOS_FETCHED: "Videos Fetched successfully!",
+    UPLOAD_SUCCESS: "Video uploaded sccessfully!",
   },
 };
 
@@ -38,6 +42,7 @@ export const ERROR_MESSAGES = {
     INVALID_TOKEN: "Invalid token!",
     FILE_UPLOAD_ERROR: "Error while uploading file.",
     INCORRECT_INPUT: "Invalid input provided!",
+    INCORRECT_PARAM: "Incorrect parameter provider!",
   },
   USER: {
     ALREADY_EXISTS: "User already exists!",
@@ -61,5 +66,9 @@ export const ERROR_MESSAGES = {
     NO_PATH_PROVIDED: "No file path provided!",
     INVALID_CLOUDINARY_URL: "Incorrect cloudinary url!",
     CLOUDINARY_DELETE_FAILED: "Failed to delete from cloudinary.",
+  },
+  VIDEO: {
+    SAME_THUMBNAIL_VIDEO: "Video content and thumbnail cannot be same!",
+    VIDEO_NOT_FOUND: "Video not found!",
   },
 };

@@ -7,7 +7,6 @@ import {
 } from "../utils/cloudinary.util.js";
 import { ApiResponse } from "../utils/ApiResponse.util.js";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
 import {
   generateAccessAndRefreshTokens,
   getUserChannelPipelineAggregate,
@@ -90,7 +89,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     .status(201)
     .json(
       new ApiResponse(
-        200,
+        201,
         createdUser,
         SUCCESS_MESSAGES.USER.REGISTERED_SUCCESSFULLY
       )
