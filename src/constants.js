@@ -32,6 +32,9 @@ export const SUCCESS_MESSAGES = {
   VIDEOS: {
     VIDEOS_FETCHED: "Videos Fetched successfully!",
     UPLOAD_SUCCESS: "Video uploaded sccessfully!",
+    VIDEO_UPDATED_SUCCESSFULLY: "Video updated successfully!",
+    VIDEO_DELETE_SUCCESS: "Video deleted successfully!",
+    PUBLISH_STATUS_TOGGLESED: "Publish status toggled successfully!",
   },
 };
 
@@ -42,7 +45,9 @@ export const ERROR_MESSAGES = {
     INVALID_TOKEN: "Invalid token!",
     FILE_UPLOAD_ERROR: "Error while uploading file.",
     INCORRECT_INPUT: "Invalid input provided!",
-    INCORRECT_PARAM: "Incorrect parameter provider!",
+    INCORRECT_PARAM: "Incorrect parameter provided!",
+    MISSING_INPUT_FIELDS: "Missing input fields!",
+    DATA_FETCH_FAILED: "Failed to fetch data.",
   },
   USER: {
     ALREADY_EXISTS: "User already exists!",
@@ -70,5 +75,8 @@ export const ERROR_MESSAGES = {
   VIDEO: {
     SAME_THUMBNAIL_VIDEO: "Video content and thumbnail cannot be same!",
     VIDEO_NOT_FOUND: "Video not found!",
+    VIDEO_UPDATE_FAIL: "Failed to update video!",
+    VIDEO_DELETE_FAILED: "Failed to delete video!",
+    TOGGLE_PUBLISH_FAILED: "Failed to toggle publish status!",
   },
 };
