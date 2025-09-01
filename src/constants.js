@@ -36,6 +36,9 @@ export const SUCCESS_MESSAGES = {
     VIDEO_DELETE_SUCCESS: "Video deleted successfully!",
     PUBLISH_STATUS_TOGGLESED: "Publish status toggled successfully!",
   },
+  PLAYLIST: {
+    CREATION_SUCCESS: "Playlist created successfully!",
+  },
 };
 
 export const ERROR_MESSAGES = {
@@ -78,5 +81,8 @@ export const ERROR_MESSAGES = {
     VIDEO_UPDATE_FAIL: "Failed to update video!",
     VIDEO_DELETE_FAILED: "Failed to delete video!",
     TOGGLE_PUBLISH_FAILED: "Failed to toggle publish status!",
+  },
+  PLAYLIST: {
+    CREATION_FAILED: "Failed to created playlist!",
   },
 };
