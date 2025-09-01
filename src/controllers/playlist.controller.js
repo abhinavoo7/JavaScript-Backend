@@ -4,6 +4,7 @@ import { Playlist } from "../models/playlist.model.js";
 import { ApiError } from "../utils/ApiError.util.js";
 import { ApiResponse } from "../utils/ApiResponse.util.js";
 import { asyncHandler } from "../utils/asyncHandler.util.js";
+import { checkValidMongooseId } from "../utils/helper.util.js";
 
 export const createPlaylist = asyncHandler(async (req, res) => {
   let { name, description } = req.body;
@@ -42,7 +43,7 @@ export const getPlaylistById = asyncHandler(async (req, res) => {
   if (!playlistId) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_PARAM);
   }
-  if (!mongoose.Types.ObjectId.isValid(playlistId)) {
+  if (!checkValidMongooseId(playlistId)) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_PARAM);
   }
   try {
@@ -65,5 +66,42 @@ export const getPlaylistById = asyncHandler(async (req, res) => {
   } catch (error) {
     console.error(error);
     throw new ApiError(500, ERROR_MESSAGES.COMMON.DATA_FETCH_FAILED);
+  }
+});
+
+export const addVideoToPlaylist = asyncHandler(async (req, res) => {
+  let { playlistId, videoId } = req.params;
+  playlistId = playlistId?.trim();
+  videoId = videoId?.trim();
+  if (
+    !playlistId ||
+    !videoId ||
+    !checkValidMongooseId(playlistId) ||
+    !checkValidMongooseId(videoId)
+  ) {
+    throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_PARAM);
+  }
+  try {
+    const playList = await Playlist.findByIdAndUpdate(
+      playlistId,
+      { $addToSet: { videos: videoId } },
+      { new: true }
+    )
+      .select("-__v")
+      .populate("owner", "fullName username email");
+    if (!playList) {
+      throw new ApiError(404, ERROR_MESSAGES.PLAYLIST.NOT_FOUND);
+    }
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          playList,
+          SUCCESS_MESSAGES.PLAYLIST.VIDEO_ADDITION_SUCCESSFULL
+        )
+      );
+  } catch (error) {
+    console.error(error);
   }
 });

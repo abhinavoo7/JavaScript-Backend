@@ -39,6 +39,7 @@ export const SUCCESS_MESSAGES = {
   PLAYLIST: {
     CREATION_SUCCESS: "Playlist created successfully!",
     FETCH_SUCCESSFUL: "Playlist fetched successfully",
+    VIDEO_ADDITION_SUCCESSFULL: "Video successfully added to playlist!",
   },
 };
 
@@ -86,5 +87,6 @@ export const ERROR_MESSAGES = {
   PLAYLIST: {
     CREATION_FAILED: "Failed to created playlist!",
     NOT_FOUND: "Playlist not found!",
+    VIDEO_ALREADY_PRESENT: "Video already present in playlist!",
   },
 };

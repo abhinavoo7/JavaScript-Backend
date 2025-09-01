@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../constants.js";
 import { Video } from "../models/video.model.js";
 import { ApiError } from "../utils/ApiError.util.js";
@@ -8,6 +7,7 @@ import {
   removeFromCloudinary,
   uploadOnCloudinary,
 } from "../utils/cloudinary.util.js";
+import { checkValidMongooseId } from "../utils/helper.util.js";
 import { getAllVideosAggregatePipeline } from "../utils/VideoController.util.js";
 
 export const getAllVideos = asyncHandler(async (req, res) => {
@@ -84,7 +84,7 @@ export const getVideoById = asyncHandler(async (req, res) => {
   if (!videoId?.trim()) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_PARAM);
   }
-  if (!mongoose.Types.ObjectId.isValid(videoId)) {
+  if (!checkValidMongooseId(videoId)) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_INPUT);
   }
   const video = await Video.findById(videoId?.trim()).populate(
@@ -107,7 +107,7 @@ export const updateVideo = asyncHandler(async (req, res) => {
   if (!videoId) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_PARAM);
   }
-  if (!mongoose.Types.ObjectId.isValid(videoId)) {
+  if (!checkValidMongooseId(videoId)) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_PARAM);
   }
   const video = await Video.findById(videoId);
@@ -167,7 +167,7 @@ export const updateVideo = asyncHandler(async (req, res) => {
 
 export const deleteVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(videoId)) {
+  if (!checkValidMongooseId(videoId)) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_PARAM);
   }
   let video;
@@ -195,7 +195,7 @@ export const deleteVideo = asyncHandler(async (req, res) => {
 
 export const togglePublishStatus = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(videoId)) {
+  if (!checkValidMongooseId(videoId)) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_PARAM);
   }
   try {
