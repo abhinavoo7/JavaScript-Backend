@@ -38,6 +38,7 @@ export const SUCCESS_MESSAGES = {
   },
   PLAYLIST: {
     CREATION_SUCCESS: "Playlist created successfully!",
+    FETCH_SUCCESSFUL: "Playlist fetched successfully",
   },
 };
 
@@ -84,5 +85,6 @@ export const ERROR_MESSAGES = {
   },
   PLAYLIST: {
     CREATION_FAILED: "Failed to created playlist!",
+    NOT_FOUND: "Playlist not found!",
   },
 };

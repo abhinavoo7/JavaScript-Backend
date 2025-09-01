@@ -85,7 +85,7 @@ export const getVideoById = asyncHandler(async (req, res) => {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_PARAM);
   }
   if (!mongoose.Types.ObjectId.isValid(videoId)) {
-    throw new ApiError(400, ERROR_MESSAGES.COMMON.VIDEO_NOT_FOUND);
+    throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_INPUT);
   }
   const video = await Video.findById(videoId?.trim()).populate(
     "owner",
