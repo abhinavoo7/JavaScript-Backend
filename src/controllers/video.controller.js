@@ -38,7 +38,10 @@ export const getAllVideos = asyncHandler(async (req, res) => {
     videos = await Video.aggregatePaginate(aggregate, options);
   } catch (error) {
     console.error(err);
-    throw new ApiError(500, ERROR_MESSAGES.VIDEO.DATA_FETCH_FAILED);
+    throw new ApiError(
+      error?.statusCode ?? 500,
+      error?.message ?? ERROR_MESSAGES.VIDEO.DATA_FETCH_FAILED
+    );
   }
   return res
     .status(200)
@@ -77,7 +80,10 @@ export const publishVideo = asyncHandler(async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    throw new ApiError(500, ERROR_MESSAGES.VIDEO.UPLOAD_FAILED);
+    throw new ApiError(
+      error?.statusCode ?? 500,
+      error?.message ?? ERROR_MESSAGES.VIDEO.UPLOAD_FAILED
+    );
   }
   return res
     .status(201)
@@ -156,7 +162,10 @@ export const updateVideo = asyncHandler(async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    throw new ApiError(500, ERROR_MESSAGES.VIDEO.VIDEO_UPDATE_FAIL);
+    throw new ApiError(
+      error?.statusCode ?? 500,
+      error?.message ?? ERROR_MESSAGES.VIDEO.VIDEO_UPDATE_FAIL
+    );
   }
   return res
     .status(200)
@@ -188,7 +197,10 @@ export const deleteVideo = asyncHandler(async (req, res) => {
     await removeFromCloudinary(video.videoFile);
   } catch (error) {
     console.error(err);
-    throw new ApiError(400, ERROR_MESSAGES.VIDEO.VIDEO_DELETE_FAILED);
+    throw new ApiError(
+      error?.statusCode ?? 500,
+      error?.message ?? ERROR_MESSAGES.VIDEO.VIDEO_DELETE_FAILED
+    );
   }
   return res
     .status(200)
@@ -230,6 +242,9 @@ export const togglePublishStatus = asyncHandler(async (req, res) => {
       );
   } catch (error) {
     console.error(error);
-    throw new ApiError(500, ERROR_MESSAGES.VIDEO.TOGGLE_PUBLISH_FAILED);
+    throw new ApiError(
+      error?.statusCode ?? 500,
+      error?.message ?? ERROR_MESSAGES.VIDEO.TOGGLE_PUBLISH_FAILED
+    );
   }
 });

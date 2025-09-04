@@ -17,6 +17,7 @@ import {
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
 } from "../constants.js";
+import { trimParams } from "../utils/helper.util.js";
 
 export const registerUser = asyncHandler(async (req, res) => {
   // get user details from frontend
@@ -219,7 +220,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
       );
   } catch (error) {
     throw new ApiError(
-      401,
+      error?.statusCode ?? 500,
       error?.message ?? ERROR_MESSAGES.USER.REFRESH_TOKEN_INVALID
     );
   }

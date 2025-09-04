@@ -31,7 +31,10 @@ export const createPlaylist = asyncHandler(async (req, res) => {
       );
   } catch (error) {
     console.error(error);
-    throw new ApiError(500, ERROR_MESSAGES.PLAYLIST.CREATION_FAILED);
+    throw new ApiError(
+      error?.statusCode ?? 500,
+      error?.message ?? ERROR_MESSAGES.PLAYLIST.CREATION_FAILED
+    );
   }
 });
 
@@ -61,7 +64,10 @@ export const getPlaylistById = asyncHandler(async (req, res) => {
       );
   } catch (error) {
     console.error(error);
-    throw new ApiError(500, ERROR_MESSAGES.COMMON.DATA_FETCH_FAILED);
+    throw new ApiError(
+      error?.statusCode ?? 500,
+      error?.message ?? ERROR_MESSAGES.COMMON.DATA_FETCH_FAILED
+    );
   }
 });
 
@@ -107,7 +113,10 @@ export const addVideoToPlaylist = asyncHandler(async (req, res) => {
       );
   } catch (error) {
     console.error(error);
-    throw new ApiError(500, ERROR_MESSAGES.PLAYLIST.VIDEO_ADDITION_FAILED);
+    throw new ApiError(
+      error?.statusCode ?? 500,
+      error?.message ?? ERROR_MESSAGES.PLAYLIST.VIDEO_ADDITION_FAILED
+    );
   }
 });
 
@@ -152,6 +161,36 @@ export const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
       );
   } catch (error) {
     console.error(error);
-    throw new ApiError(500, ERROR_MESSAGES.PLAYLIST.VIDEO_REMOVAL_FAILED);
+    throw new ApiError(
+      error?.statusCode ?? 500,
+      error?.message ?? ERROR_MESSAGES.PLAYLIST.VIDEO_REMOVAL_FAILED
+    );
+  }
+});
+
+export const deletePlaylist = asyncHandler(async (req, res) => {
+  const playlistId = req.params?.playlistId?.trim();
+  if (!playlistId || !checkValidMongooseId(playlistId)) {
+    throw new ApiError(404, ERROR_MESSAGES.COMMON.INCORRECT_PARAM);
+  }
+  try {
+    const playList = await Playlist.findOneAndDelete({
+      _id: playlistId,
+      owner: req.user.id,
+    });
+    if (!playList) {
+      throw new ApiError(404, ERROR_MESSAGES.PLAYLIST.NOT_FOUND);
+    }
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, playList, SUCCESS_MESSAGES.PLAYLIST.DELETE_SUCCESS)
+      );
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(
+      error?.statusCode ?? 500,
+      error?.message ?? ERROR_MESSAGES.PLAYLIST.DELETE_FAILED
+    );
   }
 });
