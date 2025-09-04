@@ -4,6 +4,7 @@ import {
   addVideoToPlaylist,
   createPlaylist,
   getPlaylistById,
+  removeVideoFromPlaylist,
 } from "../controllers/playlist.controller.js";
 
 const router = Router();
@@ -15,5 +16,6 @@ router.use(verifyJwt); // Apply verifyJWT middleware to all routes below in this
 router.route("/").post(createPlaylist);
 
 router.route("/add/:videoId/:playlistId").patch(addVideoToPlaylist);
+router.route("/remove/:videoId/:playlistId").patch(removeVideoFromPlaylist);
 
 export default router;

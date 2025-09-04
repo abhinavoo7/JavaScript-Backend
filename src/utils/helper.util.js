@@ -19,3 +19,5 @@ export const getSortOrder = (sortType) => {
 export const checkValidMongooseId = (id) => {
   return mongoose.Types.ObjectId.isValid(id);
 };
+
+export const trimParams = (...args) => args.map((arg) => arg?.trim());

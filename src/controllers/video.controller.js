@@ -7,11 +7,17 @@ import {
   removeFromCloudinary,
   uploadOnCloudinary,
 } from "../utils/cloudinary.util.js";
-import { checkValidMongooseId } from "../utils/helper.util.js";
+import { checkValidMongooseId, trimParams } from "../utils/helper.util.js";
 import { getAllVideosAggregatePipeline } from "../utils/VideoController.util.js";
 
 export const getAllVideos = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
+  let { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
+  [query, userId, sortBy, sortType] = trimParams(
+    query,
+    userId,
+    sortBy,
+    sortType
+  );
   if (isNaN(page) || page <= 0 || isNaN(limit) || limit <= 0) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_INPUT);
   }
@@ -41,8 +47,7 @@ export const getAllVideos = asyncHandler(async (req, res) => {
 
 export const publishVideo = asyncHandler(async (req, res) => {
   let { title, description } = req.body;
-  title = title?.trim();
-  description = description?.trim();
+  [title, description] = trimParams(title, description);
   if (!title || !description) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.ALL_FIELDS_REQUIRED);
   }
@@ -80,14 +85,14 @@ export const publishVideo = asyncHandler(async (req, res) => {
 });
 
 export const getVideoById = asyncHandler(async (req, res) => {
-  const { videoId } = req.params;
-  if (!videoId?.trim()) {
+  const videoId = req.params?.videoId?.trim();
+  if (!videoId) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_PARAM);
   }
   if (!checkValidMongooseId(videoId)) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_INPUT);
   }
-  const video = await Video.findById(videoId?.trim()).populate(
+  const video = await Video.findById(videoId).populate(
     "owner",
     "fullName username"
   );
@@ -102,8 +107,7 @@ export const getVideoById = asyncHandler(async (req, res) => {
 });
 
 export const updateVideo = asyncHandler(async (req, res) => {
-  let { videoId } = req.params;
-  videoId = videoId?.trim();
+  const videoId = req.params?.videoId?.trim();
   if (!videoId) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_PARAM);
   }
@@ -119,8 +123,8 @@ export const updateVideo = asyncHandler(async (req, res) => {
   }
   const updates = {};
   let updatedVideo;
-  if (req.body?.title) updates.title = req.body.title.trim();
-  if (req.body?.description) updates.description = req.body.description.trim();
+  if (req.body?.title) updates.title = req.body.title?.trim();
+  if (req.body?.description) updates.description = req.body.description?.trim();
   if (req.files?.thumbnail) updates.thumbnail = req.files.thumbnail[0].path;
   if (req.files?.videoFile) updates.videoFile = req.files.videoFile[0].path;
   if (Object.keys(updates).length === 0) {
@@ -166,7 +170,7 @@ export const updateVideo = asyncHandler(async (req, res) => {
 });
 
 export const deleteVideo = asyncHandler(async (req, res) => {
-  const { videoId } = req.params;
+  const videoId = req.params?.videoId?.trim();
   if (!checkValidMongooseId(videoId)) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_PARAM);
   }
@@ -194,7 +198,7 @@ export const deleteVideo = asyncHandler(async (req, res) => {
 });
 
 export const togglePublishStatus = asyncHandler(async (req, res) => {
-  const { videoId } = req.params;
+  const videoId = req.params?.videoId?.trim();
   if (!checkValidMongooseId(videoId)) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.INCORRECT_PARAM);
   }
