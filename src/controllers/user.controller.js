@@ -17,6 +17,7 @@ import {
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
 } from "../constants.js";
+import { trimParams } from "../utils/helper.util.js";
 
 export const registerUser = asyncHandler(async (req, res) => {
   // get user details from frontend
@@ -28,7 +29,13 @@ export const registerUser = asyncHandler(async (req, res) => {
   // remove password and refresh token field from response
   // check for user creation
   // return response with user details
-  const { username, email, fullName, password } = req?.body ?? {};
+  let { username, email, fullName, password } = req.body;
+  [username, email, fullName, password] = trimParams(
+    username,
+    email,
+    fullName,
+    password
+  );
 
   if (
     [fullName, email, username, password].some(
@@ -104,13 +111,14 @@ export const loginUser = asyncHandler(async (req, res) => {
   // create access token and refresh token
   // return response with user details and token as cookies
 
-  const { username, email, password } = req?.body ?? {};
+  let { email, username, password } = req.body ?? {};
+  [email, username, password] = trimParams(email, username, password);
 
   if (!username && !email) {
     throw new ApiError(400, ERROR_MESSAGES.USER.MISSING_USERNAME_EMAIL);
   }
 
-  if (!password || password.trim() === "") {
+  if (!password) {
     throw new ApiError(400, ERROR_MESSAGES.USER.PASSWORD_REQUIRED);
   }
 
@@ -152,7 +160,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 });
 
 export const logoutUser = asyncHandler(async (req, res) => {
-  const userId = req?.user?._id; // Get user from request object set by verifyJwt middleware
+  const userId = req?.user?._id?.trim(); // Get user from request object set by verifyJwt middleware
   if (!userId) {
     throw new ApiError(400, ERROR_MESSAGES.USER.DOES_NOT_EXIST);
   }
@@ -212,18 +220,19 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
       );
   } catch (error) {
     throw new ApiError(
-      401,
+      error?.statusCode ?? 500,
       error?.message ?? ERROR_MESSAGES.USER.REFRESH_TOKEN_INVALID
     );
   }
 });
 
 export const changePassword = asyncHandler(async (req, res) => {
-  const { oldPassword, newPassword } = req.body;
+  let { oldPassword, newPassword } = req.body;
+  [oldPassword, newPassword] = trimParams(oldPassword, newPassword);
   if (!oldPassword || !newPassword) {
     throw new ApiError(400, ERROR_MESSAGES.USER.PASSWORD_REQUIRED);
   }
-  if (oldPassword?.trim() === newPassword?.trim()) {
+  if (oldPassword === newPassword) {
     throw new ApiError(400, ERROR_MESSAGES.USER.SAME_PASSWORD);
   }
   const userId = req?.user?._id;
@@ -246,7 +255,8 @@ export const getCurrentUser = asyncHandler((req, res) => {
 });
 
 export const updateUserDetails = asyncHandler(async (req, res) => {
-  const { fullName, email } = req.body;
+  let { fullName, email } = req.body;
+  [fullName, email] = trimParams(fullName, email);
   if (!fullName || !email) {
     throw new ApiError(400, ERROR_MESSAGES.COMMON.ALL_FIELDS_REQUIRED);
   }
@@ -357,8 +367,8 @@ export const deleteUserCoverImage = asyncHandler(async (req, res) => {
 });
 
 export const getUserChannelProfile = asyncHandler(async (req, res) => {
-  const { username } = req?.params;
-  if (!username?.trim()) {
+  const { username } = req?.params?.username?.trim();
+  if (!username) {
     throw new ApiError(400, ERROR_MESSAGES.USER.USERNAME_MISSING);
   }
 

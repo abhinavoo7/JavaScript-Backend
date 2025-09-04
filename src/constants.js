@@ -40,6 +40,8 @@ export const SUCCESS_MESSAGES = {
     CREATION_SUCCESS: "Playlist created successfully!",
     FETCH_SUCCESSFUL: "Playlist fetched successfully",
     VIDEO_ADDITION_SUCCESSFULL: "Video successfully added to playlist!",
+    VIDEO_REMOVED: "Video successfully removed from playlist!",
+    DELETE_SUCCESS: "Playlist deleted successfully!",
   },
 };
 
@@ -88,5 +90,8 @@ export const ERROR_MESSAGES = {
     CREATION_FAILED: "Failed to created playlist!",
     NOT_FOUND: "Playlist not found!",
     VIDEO_ALREADY_PRESENT: "Video already present in playlist!",
+    VIDEO_REMOVAL_FAILED: "Failed to remove video!",
+    VIDEO_ADDITION_FAILED: "Failed to add video in playlist!",
+    DELETE_FAILED: "Failed to delete playlist!",
   },
 };

@@ -19,3 +19,10 @@ export const getSortOrder = (sortType) => {
 export const checkValidMongooseId = (id) => {
   return mongoose.Types.ObjectId.isValid(id);
 };
+
+/**
+ * @description accepts multiple args of string data type and returns an array with trimmed strings
+ * @param  {string | Array<string>} args
+ * @returns {Array<string>}
+ */
+export const trimParams = (...args) => args.map((arg) => arg?.trim());
